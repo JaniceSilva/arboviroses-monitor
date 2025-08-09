@@ -5,6 +5,7 @@
 import os
 import pandas as pd
 from datetime import datetime
+from typing import Dict
 
 class ReportGenerator:
     """Gerador de relatórios e visualizações"""
@@ -13,7 +14,7 @@ class ReportGenerator:
         self.report_path = "reports/"
         os.makedirs(self.report_path, exist_ok=True)
     
-    def generate_prediction_report(self, predictions: dict, alert: dict) -> str:
+    def generate_prediction_report(self, predictions: Dict, alert: Dict) -> str:
         """Gera relatório de predições"""
         # Implementação completa aqui
         pass

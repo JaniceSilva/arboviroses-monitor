@@ -15,7 +15,7 @@ class AlertSystem:
             'febre_amarela_cases': {'low': 2, 'medium': 5, 'high': 10}
         }
     
-    def assess_risk_level(self, predicted_cases: dict) -> dict:
+    def assess_risk_level(self, predicted_cases: Dict) -> Dict:
         """Avalia nível de risco baseado nas predições"""
         # Implementação completa aqui
         pass
