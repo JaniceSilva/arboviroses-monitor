@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Monitoramento de Arboviroses - Teófilo Otoni/MG</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo-section">
+                    <i class="fas fa-virus"></i>
+                    <h1>Arboviroses Monitor</h1>
+                    <span class="location">Teófilo Otoni - MG</span>
+                </div>
+                <div class="header-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Última Atualização</span>
+                        <span class="stat-value" id="last-update">--:--</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Status do Sistema</span>
+                        <span class="stat-value status-active" id="system-status">Ativo</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Alert Banner -->
+        <div class="alert-banner" id="alert-banner">
+            <div class="alert-content">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span id="alert-message">Carregando status de alertas...</span>
+                <button class="alert-close" onclick="closeAlert()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Dashboard -->
+        <main class="main-content">
+            <!-- Summary Cards -->
+            <section class="summary-cards">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Dengue</h3>
+                        <i class="fas fa-mosquito"></i>
+                    </div>
+                    <div class="card-content">
+                        <div class="metric-value" id="dengue-cases">--</div>
+                        <div class="metric-label">casos esta semana</div>
+                        <div class="metric-trend" id="dengue-trend">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>+12%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Zika</h3>
+                        <i class="fas fa-bug"></i>
+                    </div>
+                    <div class="card-content">
+                        <div class="metric-value" id="zika-cases">--</div>
+                        <div class="metric-label">casos esta semana</div>
+                        <div class="metric-trend" id="zika-trend">
+                            <i class="fas fa-arrow-down"></i>
+                            <span>-5%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Chikungunya</h3>
+                        <i class="fas fa-spider"></i>
+                    </div>
+                    <div class="card-content">
+                        <div class="metric-value" id="chikungunya-cases">--</div>
+                        <div class="metric-label">casos esta semana</div>
+                        <div class="metric-trend" id="chikungunya-trend">
+                            <i class="fas fa-minus"></i>
+                            <span>0%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Febre Amarela</h3>
+                        <i class="fas fa-thermometer-half"></i>
+                    </div>
+                    <div class="card-content">
+                        <div class="metric-value" id="febre-amarela-cases">--</div>
+                        <div class="metric-label">casos esta semana</div>
+                        <div class="metric-trend" id="febre-amarela-trend">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>+25%</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Charts Section -->
+            <section class="charts-section">
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3>Evolução de Casos</h3>
+                        <div class="chart-controls">
+                            <select id="period-selector">
+                                <option value="30">Últimos 30 dias</option>
+                                <option value="90">Últimos 3 meses</option>
+                                <option value="365" selected>Último ano</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="chart-content">
+                        <canvas id="cases-chart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3>Distribuição por Doença</h3>
+                    </div>
+                    <div class="chart-content">
+                        <canvas id="distribution-chart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Predictions and Climate -->
+            <section class="predictions-section">
+                <div class="prediction-container">
+                    <div class="chart-header">
+                        <h3>Predições (7 dias)</h3>
+                        <div class="prediction-info">
+                            <i class="fas fa-info-circle"></i>
+                            <span>Baseado em IA e dados climáticos</span>
+                        </div>
+                    </div>
+                    <div class="chart-content">
+                        <canvas id="predictions-chart"></canvas>
+                    </div>
+                </div>
+
+                <div class="climate-container">
+                    <div class="chart-header">
+                        <h3>Correlação Climática</h3>
+                    </div>
+                    <div class="climate-content">
+                        <div class="climate-metrics">
+                            <div class="climate-metric">
+                                <div class="metric-icon">
+                                    <i class="fas fa-thermometer-half"></i>
+                                </div>
+                                <div class="metric-info">
+                                    <span class="metric-name">Temperatura</span>
+                                    <span class="metric-value" id="temperature">--°C</span>
+                                </div>
+                            </div>
+                            <div class="climate-metric">
+                                <div class="metric-icon">
+                                    <i class="fas fa-tint"></i>
+                                </div>
+                                <div class="metric-info">
+                                    <span class="metric-name">Umidade</span>
+                                    <span class="metric-value" id="humidity">--%</span>
+                                </div>
+                            </div>
+                            <div class="climate-metric">
+                                <div class="metric-icon">
+                                    <i class="fas fa-cloud-rain"></i>
+                                </div>
+                                <div class="metric-info">
+                                    <span class="metric-name">Precipitação</span>
+                                    <span class="metric-value" id="precipitation">-- mm</span>
+                                </div>
+                            </div>
+                            <div class="climate-metric">
+                                <div class="metric-icon">
+                                    <i class="fas fa-wind"></i>
+                                </div>
+                                <div class="metric-info">
+                                    <span class="metric-name">Vento</span>
+                                    <span class="metric-value" id="wind">-- km/h</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Map and Recommendations -->
+            <section class="map-section">
+                <div class="map-container">
+                    <div class="chart-header">
+                        <h3>Mapa de Risco</h3>
+                        <div class="map-legend">
+                            <span class="legend-item low">Baixo</span>
+                            <span class="legend-item medium">Médio</span>
+                            <span class="legend-item high">Alto</span>
+                            <span class="legend-item critical">Crítico</span>
+                        </div>
+                    </div>
+                    <div class="map-content">
+                        <div id="risk-map"></div>
+                    </div>
+                </div>
+
+                <div class="recommendations-container">
+                    <div class="chart-header">
+                        <h3>Recomendações</h3>
+                        <div class="alert-level" id="alert-level-indicator">
+                            <span class="alert-badge medium">MÉDIO</span>
+                        </div>
+                    </div>
+                    <div class="recommendations-content">
+                        <ul id="recommendations-list">
+                            <li>Carregando recomendações...</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-content">
+                <div class="footer-info">
+                    <p>&copy; 2025 Sistema de Monitoramento de Arboviroses - Teófilo Otoni/MG</p>
+                    <p>Dados atualizados automaticamente a cada hora</p>
+                </div>
+                <div class="footer-links">
+                    <a href="#" onclick="showAbout()">Sobre</a>
+                    <a href="#" onclick="showHelp()">Ajuda</a>
+                    <a href="#" onclick="showContact()">Contato</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Carregando dados...</p>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="dashboard.js"></script>
+</body>
+</html>
+
