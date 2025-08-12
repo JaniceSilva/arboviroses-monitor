@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+
+# Virtual environments
+venv/
+.env/
+
+# Flask/instance folder
+instance/
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Zip files
+*.zip
+
+# Database
+*.db
+
+# Node modules
+node_modules/
+
+# Others
+*.bak
+*.swp
+*.swo
+
+# Exclude dashboard venv
+arboviroses-dashboard/venv/
